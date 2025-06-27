@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: taxi-rides-data-drift-detection-cronjob
+  namespace: default
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: taxi-rides-data-drift-detection-cronjob
+            image: taxi-rides-outlier-detection
+            imagePullPolicy: IfNotPresent
+            command: ["detect-input-data-drift", "/data"]
+            volumeMounts:
+            - name: local-folder
+              mountPath: /data
+          volumes:
+          - name: local-folder
+            hostPath:
+              path: /run/desktop/mnt/host/c/Public/ais/dev2/mlops2/ais-taxi-rides-g2/work
+              type: Directory
+          restartPolicy: Never

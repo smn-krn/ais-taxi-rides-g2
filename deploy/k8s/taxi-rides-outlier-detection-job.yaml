@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: taxi-rides-outlier-detection-job
+  namespace: default
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 600
+  template:
+    spec:
+      containers:
+      - name: taxi-rides-outlier-detection
+        image: taxi-rides-outlier-detection
+        imagePullPolicy: IfNotPresent
+        command: ["detect-taxi-ride-outliers", "data"]
+        volumeMounts:
+        - name: local-folder
+          mountPath: /app/data
+      volumes:
+      - name: local-folder
+        hostPath:
+          path: /run/desktop/mnt/host/c/Public/ais/dev2/mlops2/ais-taxi-rides-g2/work
+          type: Directory
+      restartPolicy: OnFailure
